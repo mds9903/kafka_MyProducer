@@ -11,6 +11,6 @@ public class TopicConfig {
     // create a topic
     @Bean
     public NewTopic myTopic() {
-        return TopicBuilder.name("type_2_myTopic").build();
+        return TopicBuilder.name("items").build();
     }
 }
