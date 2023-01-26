@@ -40,10 +40,7 @@ public class MyProducerApplication {
 
         return args -> {
             int i = 250;
-//            logger.info("sending message:-"
-//                    + "\ntopic: " + topic
-//                    + "\ndata: {" + i + "," + data_csv + "}");
-//            kafkaTemplate.send(topic, i + "," + data_csv);
+
             while (i++ < 280) {
                 logger.info("sending message:-"
                         + "\ntopic: " + topic
@@ -52,14 +49,4 @@ public class MyProducerApplication {
             }
         };
     }
-    // a map of string-string
-//		HashMap<String, String> data_map = new HashMap<>();
-//		data_map.put("itemId", "123456789");
-//		data_map.put("itemDesc", "test Desc");
-//		data_map.put("itemType", "test Type");
-//		data_map.put("itemStatus", "test Status");
-//		data_map.put("itemPrice", "9.99");
-//		data_map.put("pickupAllowed", "true");
-//		data_map.put("shippingAllowed", "true");
-//		data_map.put("deliveryAllowed", "true");
 }
