@@ -11,6 +11,6 @@ public class TopicConfig {
     // create a topic
     @Bean
     public NewTopic myTopic() {
-        return TopicBuilder.name("items").build();
+        return TopicBuilder.name("inventory_app").partitions(3).replicas(1).build();
     }
 }
