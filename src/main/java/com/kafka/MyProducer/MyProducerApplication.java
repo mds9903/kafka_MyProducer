@@ -31,38 +31,22 @@ public class MyProducerApplication {
         // topic to publish messages to
         String topic = "inventory_app";
 //        String key = "item";
-        String key = "location";
+//        String key = "location";
 
         // different types of messages data that can be sent
         // a csv format text
-//        String data_csv = "Blue Jeans,Apparel,HSN001,test status,100,t,t,t";
-        String data_csv =
-                "111," +
-                "Reliance & Co.,"+
-                "Inventory Hub,"+
-                "false,"+
-                "true,"+
-                "false,"+
-                "addr line 1,"+
-                "addr line 2,"+
-                "addr line 3,"+
-                "Kolkata,"+
-                "West Bengal,"+
-                "India,"+
-                "700001";
+        String data_item = "Blue Jeans,Apparel,HSN001,test status,100,t,t,t";
+        String data_location = "Reliance & Co.,Inventory Hub,false,true,false,addr line 1,addr line 2,addr line 3,Kolkata,West Bengal,India,700001";
 
 
         return args -> {
             int i = 250;
-
             while (i++ < 280) {
-
                 logger.info("sending message:-"
                         + "\ntopic: " + topic
-                        + "\nkey: " + key
-                        + "\ndata: {" + i + "," + data_csv + "}");
-                kafkaTemplate.send(topic,0, key, i + "," + data_csv);
-//                kafkaTemplate.send(topic, key , i + "," + "test not item");
+                        // send varied data in the message published; odd iterations => location; even iteration => item
+                        + "\ndata: {" + i + "," + (i % 2 == 0 ? data_item : data_location) + "}");
+                kafkaTemplate.send(topic, (i % 2 == 0 ? data_item : data_location));
             }
         };
     }
