@@ -1,5 +1,7 @@
 package com.kafka.MyProducer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -8,14 +10,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 @SpringBootApplication
 public class MyProducerApplication {
 
     Logger logger = LoggerFactory.getLogger(MyProducerApplication.class);
+
+    // for json parsing
+    ObjectMapper mapper = new ObjectMapper();
 
     public static void main(String[] args) {
         SpringApplication.run(MyProducerApplication.class, args);
@@ -24,30 +25,67 @@ public class MyProducerApplication {
 
     @Bean
     CommandLineRunner myCommandLineRunner(KafkaTemplate<String, String> kafkaTemplate) {
-        // to send messages using kafka template
-
-        logger.info("in myCommandLineRunner");
+        // this method sends messages using kafka template
 
         // topic to publish messages to
         String topic = "inventory_app";
-//        String key = "item";
-//        String key = "location";
 
         // different types of messages data that can be sent
         // a csv format text
-        String data_item = "Blue Jeans,Apparel,HSN001,test status,100,t,t,t";
-        String data_location = "Reliance & Co.,Inventory Hub,false,true,false,addr line 1,addr line 2,addr line 3,Kolkata,West Bengal,India,700001";
-
+        // String item_csv = "Blue Jeans,Apparel,HSN001,test status,100,t,t,t";
+        // String location_csv = "Reliance & Co.,Inventory Hub,false,true,false,addr line 1,addr line 2,addr line 3,Kolkata,West Bengal,India,700001";
 
         return args -> {
-            int i = 250;
-            while (i++ < 280) {
-                logger.info("sending message:-"
-                        + "\ntopic: " + topic
-                        // send varied data in the message published; odd iterations => location; even iteration => item
-                        + "\ndata: {" + i + "," + (i % 2 == 0 ? data_item : data_location) + "}");
-                kafkaTemplate.send(topic, (i % 2 == 0 ? data_item : data_location));
+            for (int i = 1202; ; i++) {
+                // for every 1000th iteration
+                if (i % 1000 == 0) {
+                    try {
+                        logger.info("SLEEPING FOR 5000 MS");
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        // Handle exception
+                        logger.error("interrupted exception occurred\n\t" + e);
+                    }
+                }
+
+                // a jsonString with unique id defined by i value
+                final String msg = i % 2 == 0 ? getItemJsonString(i) : getLocationJsonString(i);
+
+                logger.info("--------sending message--------" + "\ntopic: " + topic + "\nmsg:" + msg);
+                kafkaTemplate.send(topic, msg);
             }
         };
+    }
+
+    public String getItemJsonString(int id){
+        ObjectNode itemJson = mapper.createObjectNode();
+        itemJson.put("itemId", id);
+        itemJson.put("itemDesc", "a generic item created by kafka producer");
+        itemJson.put("category", "kafka category");
+        itemJson.put("itemType", "kafka type");
+        itemJson.put("status", "unknown");
+        itemJson.put("price", 99.99);
+        itemJson.put("pickupAllowed", false);
+        itemJson.put("shippingAllowed", false);
+        itemJson.put("deliveryAllowed", false);
+        return itemJson.toString();
+    }
+
+    public String getLocationJsonString(int id){
+        ObjectNode locationJson = mapper.createObjectNode();
+        locationJson.put("locationId", id);
+        locationJson.put("locationDesc", "a generic location created by kafka producer");
+        locationJson.put("type", "Kafka-Warehouse");
+        locationJson.put("pickupAllowed", false);
+        locationJson.put("shippingAllowed", false);
+        locationJson.put("deliveryAllowed", false);
+        locationJson.put("addrLine1", "kafka Line 1");
+        locationJson.put("addrLine2", "kafka Line 2");
+        locationJson.put("addrLine3", "kafka Line 3");
+        locationJson.put("city", "kafka City");
+        locationJson.put("state", "kafka State");
+        locationJson.put("country", "kafka Country");
+        locationJson.put("pincode", "456456");
+        return locationJson.toString();
     }
 }

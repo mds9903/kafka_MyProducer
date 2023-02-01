@@ -34,6 +34,7 @@ public class MyProducerConfig {
     // returns a kafka producer factory using a map of properties string
     @Bean
     public ProducerFactory<String, String> myProducerFactory() {
+        // creates a Producer<String, String> with the configs
         return new DefaultKafkaProducerFactory<>(myProducerConfig());
     }
 
