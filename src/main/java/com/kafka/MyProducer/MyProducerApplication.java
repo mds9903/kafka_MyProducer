@@ -24,13 +24,11 @@ public class MyProducerApplication {
 
 
     @Bean
+    // this method sends messages using kafka template
     CommandLineRunner myCommandLineRunner(KafkaTemplate<String, String> kafkaTemplate) {
-        // this method sends messages using kafka template
-
         // topic to publish messages to
         String topic = "inventory_app";
 
-        // different types of messages data that can be sent
         // a csv format text
         // String item_csv = "Blue Jeans,Apparel,HSN001,test status,100,t,t,t";
         // String location_csv = "Reliance & Co.,Inventory Hub,false,true,false,addr line 1,addr line 2,addr line 3,Kolkata,West Bengal,India,700001";
@@ -51,12 +49,13 @@ public class MyProducerApplication {
                 // a jsonString with unique id defined by i value
                 final String msg = i % 2 == 0 ? getItemJsonString(i) : getLocationJsonString(i);
 
-                logger.info("--------sending message--------" + "\ntopic: " + topic + "\nmsg:" + msg);
+                logger.info("----sending message----" + "\ntopic: " + topic + "\nmsg:" + msg);
                 kafkaTemplate.send(topic, msg);
             }
         };
     }
 
+    // this method returns a string in a json format for 'items'
     public String getItemJsonString(int id){
         ObjectNode itemJson = mapper.createObjectNode();
         itemJson.put("itemId", id);
@@ -71,6 +70,7 @@ public class MyProducerApplication {
         return itemJson.toString();
     }
 
+    // this method returns a string in a json format for 'items'
     public String getLocationJsonString(int id){
         ObjectNode locationJson = mapper.createObjectNode();
         locationJson.put("locationId", id);

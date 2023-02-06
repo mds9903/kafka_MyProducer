@@ -1,5 +1,6 @@
 package com.kafka.MyProducer;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -7,7 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 class MyProducerApplicationTests {
 
 	@Test
-	void contextLoads() {
-	}
-
+    void testGetItemJsonString_returnString(){
+        // set up
+        MyProducerApplication myProducerApplication = new MyProducerApplication();
+        int id = 1;
+        // execute
+        Object actual = myProducerApplication.getItemJsonString(id);
+        // assert
+        Assertions.assertEquals("".getClass(), actual.getClass());
+    }
 }
