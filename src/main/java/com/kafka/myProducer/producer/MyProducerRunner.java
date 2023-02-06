@@ -1,27 +1,24 @@
-package com.kafka.MyProducer;
+package com.kafka.myProducer.producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kafka.myProducer.MyProducerApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication
-public class MyProducerApplication {
-
+@Component
+public class MyProducerRunner {
     Logger logger = LoggerFactory.getLogger(MyProducerApplication.class);
 
     // for json parsing
     ObjectMapper mapper = new ObjectMapper();
 
-    public static void main(String[] args) {
-        SpringApplication.run(MyProducerApplication.class, args);
-    }
-
+    // the sleep period in ms after pushing messages
+    Integer sleepPeriod = 1000;
 
     @Bean
     // this method sends messages using kafka template
@@ -38,8 +35,8 @@ public class MyProducerApplication {
                 // for every 1000th iteration
                 if (i % 1000 == 0) {
                     try {
-                        logger.info("SLEEPING FOR 5000 MS");
-                        Thread.sleep(5000);
+                        logger.info("SLEEPING FOR "+sleepPeriod);
+                        Thread.sleep(sleepPeriod);
                     } catch (InterruptedException e) {
                         // Handle exception
                         logger.error("interrupted exception occurred\n\t" + e);
@@ -56,7 +53,7 @@ public class MyProducerApplication {
     }
 
     // this method returns a string in a json format for 'items'
-    public String getItemJsonString(int id){
+    public String getItemJsonString(int id) {
         ObjectNode itemJson = mapper.createObjectNode();
         itemJson.put("itemId", id);
         itemJson.put("itemDesc", "a generic item created by kafka producer");
@@ -71,7 +68,7 @@ public class MyProducerApplication {
     }
 
     // this method returns a string in a json format for 'items'
-    public String getLocationJsonString(int id){
+    public String getLocationJsonString(int id) {
         ObjectNode locationJson = mapper.createObjectNode();
         locationJson.put("locationId", id);
         locationJson.put("locationDesc", "a generic location created by kafka producer");
