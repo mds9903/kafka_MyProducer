@@ -3,6 +3,7 @@ package com.kafka.myProducer.producer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kafka.myProducer.app.MyProducerApplication;
+import com.kafka.myProducer.producer.exceptionHandling.InvalidIdException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +45,12 @@ public class MyProducerRunner {
                 }
 
                 // a jsonString with unique id defined by i value
-                final String msg = i % 2 == 0 ? getItemJsonString(i) : getLocationJsonString(i);
+                final String msg;
+                try {
+                    msg = i % 2 == 0 ? getItemJsonString(i) : getLocationJsonString(i);
+                } catch (InvalidIdException e) {
+                    throw new RuntimeException(e);
+                }
 
                 logger.info("----sending message----" + "\ntopic: " + topic + "\nmsg:" + msg);
                 kafkaTemplate.send(topic, msg);
@@ -53,7 +59,10 @@ public class MyProducerRunner {
     }
 
     // this method returns a string in a json format for 'items'
-    public static String getItemJsonString(Integer id) {
+    public static String getItemJsonString(Integer id) throws InvalidIdException {
+        if(id <= 0){
+            throw new InvalidIdException("Given ID is not a valid positive integer");
+        }
         ObjectNode itemJson = mapper.createObjectNode();
         itemJson.put("itemId", id);
         itemJson.put("itemDesc", "a generic item created by kafka producer");
@@ -68,7 +77,10 @@ public class MyProducerRunner {
     }
 
     // this method returns a string in a json format for 'items'
-    public static String getLocationJsonString(Integer id) {
+    public static String getLocationJsonString(Integer id) throws InvalidIdException {
+        if(id <= 0){
+            throw new InvalidIdException("Given ID is not a valid positive integer");
+        }
         ObjectNode locationJson = mapper.createObjectNode();
         locationJson.put("locationId", id);
         locationJson.put("locationDesc", "a generic location created by kafka producer");
